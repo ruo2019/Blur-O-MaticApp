@@ -15,9 +15,10 @@ class BlurWorker(ctx: Context, params: WorkerParameters): Worker(ctx, params) {
         return try {
             val picture =
                 BitmapFactory.decodeResource(appContext.resources, R.drawable.android_cupcake)
-            blurBitmap(picture, appContext)
-            val uri = writeBitmapToFile(appContext, picture)
-            makeStatusNotification(uri.toString(), appContext)
+            val output = blurBitmap(picture, appContext)
+            val outputUri = writeBitmapToFile(appContext, output)
+
+            makeStatusNotification("Output is $outputUri", appContext)
             Result.success()
         } catch (throwable:Throwable) {
             Log.e(TAG, "Error applying blur")
