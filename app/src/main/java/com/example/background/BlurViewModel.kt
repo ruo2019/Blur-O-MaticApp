@@ -22,12 +22,13 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-
+import androidx.work.WorkManager
 
 class BlurViewModel(application: Application) : ViewModel() {
 
-    internal var imageUri: Uri? = null
-    internal var outputUri: Uri? = null
+    private val workManager = WorkManager.getInstance(application)
+    private var imageUri: Uri? = null
+    private var outputUri: Uri? = null
 
     init {
         imageUri = getImageUri(application.applicationContext)
@@ -39,24 +40,19 @@ class BlurViewModel(application: Application) : ViewModel() {
     internal fun applyBlur(blurLevel: Int) {}
 
     private fun uriOrNull(uriString: String?): Uri? {
-        return if (!uriString.isNullOrEmpty()) {
-            Uri.parse(uriString)
-        } else {
-            null
-        }
+        return if (!uriString.isNullOrEmpty()) Uri.parse(uriString)
+        else null
     }
 
     private fun getImageUri(context: Context): Uri {
         val resources = context.resources
 
-        val imageUri = Uri.Builder()
+        return Uri.Builder()
             .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
             .authority(resources.getResourcePackageName(R.drawable.android_cupcake))
             .appendPath(resources.getResourceTypeName(R.drawable.android_cupcake))
             .appendPath(resources.getResourceEntryName(R.drawable.android_cupcake))
             .build()
-
-        return imageUri
     }
 
     internal fun setOutputUri(outputImageUri: String?) {
@@ -65,7 +61,7 @@ class BlurViewModel(application: Application) : ViewModel() {
 
     class BlurViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
 
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return if (modelClass.isAssignableFrom(BlurViewModel::class.java)) {
                 BlurViewModel(application) as T
             } else {
