@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.example.background.KEY_IMAGE_URI
 import com.example.background.R
 
@@ -27,8 +28,8 @@ class BlurWorker(ctx: Context, params: WorkerParameters): Worker(ctx, params) {
             val picture = BitmapFactory.decodeStream(resolver.openInputStream(Uri.parse(resourceUri)))
             val output = blurBitmap(picture, appContext)
             val outputUri = writeBitmapToFile(appContext, output)
-
-            Result.success()
+            val outputData = workDataOf(KEY_IMAGE_URI to outputUri.toString())
+            Result.success(outputData)
         } catch (throwable:Throwable) {
             Log.e(TAG, "Error applying blur")
             throwable.printStackTrace()
