@@ -49,7 +49,7 @@ class BlurViewModel(application: Application) : ViewModel() {
             }
             continuation = continuation.then(blurBuilder.build())
         }
-        val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java).build()
+        val save = OneTimeWorkRequest.Builder(SaveImageToFileWorker::class.java).addTag(TAG_OUTPUT).build()
         continuation = continuation.then(save)
         continuation.enqueue()
     }
